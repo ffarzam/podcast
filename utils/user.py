@@ -50,6 +50,16 @@ async def check_episode_bookmark(user_id, channel_id, item_id, db):
     return bool(data), count
 
 
+async def get_users_list(channel_id, db):
+    podcast_collection = db["podcast"]
+    data = await podcast_collection.find_one({"channel_id": channel_id, "channel_bookmark": {"$exists": True}},
+                                             projection={"channel_bookmark": 1, "_id": 0})
+
+    if data and data.get("channel_bookmark"):
+        return data.get("channel_bookmark")
+    return []
+
+
 async def find_user(request):
     user_id = None
     try:
